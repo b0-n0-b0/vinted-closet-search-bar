@@ -1,15 +1,15 @@
 // ==UserScript==
 // @name         Vinted Feed Filter
 // @namespace    http://tampermonkey.net/
-// @version      1.7
+// @version      1.8
 // @description  Filter Vinted items by title in real-time
 // @author       b0n0b0 + fixer
-// @match        https://www.vinted.it/*
-// @match        https://www.vinted.com/*
-// @match        https://www.vinted.fr/*
-// @match        https://www.vinted.pl/*
-// @match        https://www.vinted.es/*
-// @match        https://www.vinted.de/*
+// @match        https://www.vinted.it/member/*
+// @match        https://www.vinted.com/member/*
+// @match        https://www.vinted.fr/member/*
+// @match        https://www.vinted.pl/member/*
+// @match        https://www.vinted.es/member/*
+// @match        https://www.vinted.de/member/*
 // @grant        none
 // @updateURL    https://github.com/b0-n0-b0/vinted-closet-search-bar/raw/main/vintedFeedFilter.user.js
 // @downloadURL  https://github.com/b0-n0-b0/vinted-closet-search-bar/raw/main/vintedFeedFilter.user.js
@@ -50,7 +50,6 @@
 
             const counterbarDomObserver = new MutationObserver(() => {
                 const counter = document.querySelector("#content > div > div.container > div > div:nth-child(3) > div.profile__items-wrapper > div.u-z-index-isolate > div.web_ui__Container__container > div > div > h2") || document.querySelector("#content > div > div.u-z-index-isolate > div.web_ui__Container__container > div > div > h2")
-                console.log(counter)
                 if (counter){
                     counter.appendChild(filterCounter)
                     counterbarDomObserver.disconnect()
