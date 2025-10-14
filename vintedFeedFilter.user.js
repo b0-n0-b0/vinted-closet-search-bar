@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Vinted Feed Filter
 // @namespace    http://tampermonkey.net/
-// @version      1.5
+// @version      1.7
 // @description  Filter Vinted items by title in real-time
 // @author       b0n0b0 + fixer
 // @match        https://www.vinted.it/*
@@ -37,18 +37,28 @@
         if (document.body) {
             setupFilter();
 
-            const domObserver = new MutationObserver(() => {
+            const searchbarDomObserver = new MutationObserver(() => {
                 const target = document.querySelector('[data-testid="closet-buyer-filters"]');
-                const counter = document.querySelector("#content > div > div.container > div > div:nth-child(3) > div.profile__items-wrapper > div.u-z-index-isolate > div.web_ui__Container__container > div > div > h2")
 
                 if (target) {
                     target.lastChild.appendChild(searchInput)
-                    counter.appendChild(filterCounter)
-                    domObserver.disconnect()
+                    searchbarDomObserver.disconnect()
                 }
             });
 
-            domObserver.observe(document.body, { childList: true, subtree: true });
+            searchbarDomObserver.observe(document.body, { childList: true, subtree: true });
+
+            const counterbarDomObserver = new MutationObserver(() => {
+                const counter = document.querySelector("#content > div > div.container > div > div:nth-child(3) > div.profile__items-wrapper > div.u-z-index-isolate > div.web_ui__Container__container > div > div > h2") || document.querySelector("#content > div > div.u-z-index-isolate > div.web_ui__Container__container > div > div > h2")
+                console.log(counter)
+                if (counter){
+                    counter.appendChild(filterCounter)
+                    counterbarDomObserver.disconnect()
+                }
+            });
+
+            counterbarDomObserver.observe(document.body, { childList: true, subtree: true });
+
         } else {
             setTimeout(init, 100);
         }
