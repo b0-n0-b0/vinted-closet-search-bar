@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Vinted Feed Filter
 // @namespace    http://tampermonkey.net/
-// @version      1.8
+// @version      1.9
 // @description  Filter Vinted items by title in real-time
 // @author       b0n0b0 + fixer
 // @match        https://www.vinted.it/member/*
@@ -17,6 +17,44 @@
 
 (function() {
     'use strict';
+    // -- HOOK XHR to avoid loading only 20 elements at a time
+    // --- Utility: modify query params ---
+    function rewriteUrlParams(urlString) {
+        try {
+            const url = new URL(urlString, location.origin);
+
+            // --- Example changes: ---
+            // Add a param if not present
+            if (url.searchParams.has('per_page')) {
+                url.searchParams.set('per_page', '100');
+            }
+            return url.toString();
+        } catch (e) {
+            console.warn('[param rewrite] failed for', urlString, e);
+            return urlString;
+        }
+    }
+
+    const OriginalXHR = window.XMLHttpRequest;
+
+    function HookedXHR() {
+        const xhr = new OriginalXHR();
+        const originalOpen = xhr.open;
+
+        xhr.open = function (method, url, async, user, password) {
+            const newUrl = rewriteUrlParams(url);
+            if (url !== newUrl) {
+                console.log(`[xhr] Rewriting URL:\n  from: ${url}\n  to:   ${newUrl}`);
+            }
+            return originalOpen.call(this, method, newUrl, async, user, password);
+        };
+
+        return xhr;
+    }
+
+    HookedXHR.prototype = OriginalXHR.prototype;
+    window.XMLHttpRequest = HookedXHR;
+
     // Create search input
     const searchInput = document.createElement('input');
     searchInput.type = 'text';
